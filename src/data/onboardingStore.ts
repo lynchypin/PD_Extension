@@ -1,6 +1,7 @@
 const ONBOARDING_KEY = 'pd-onboarding';
 const TERMINOLOGY_KEY = 'pd-terminology-dismissed';
 const TOUR_KEY = 'pd-guided-tour';
+const TERM_FLOW_KEY = 'pd-term-flow';
 
 export type OnboardingRole = 'admin' | 'user' | null;
 
@@ -154,6 +155,7 @@ export function resetOnboarding(): OnboardingState {
   localStorage.removeItem(ONBOARDING_KEY);
   localStorage.removeItem(TERMINOLOGY_KEY);
   localStorage.removeItem(TOUR_KEY);
+  localStorage.removeItem(TERM_FLOW_KEY);
   return defaultState();
 }
 
@@ -596,4 +598,42 @@ export const TERMINOLOGY: Record<string, TerminologyEntry> = {
     term: 'AIOps',
     definition: 'Artificial Intelligence for IT Operations. In PagerDuty, this means ML-powered features like intelligent alert grouping, noise reduction, and similar incident suggestions.',
   },
+};
+
+export interface TermFlowState {
+  completed: boolean;
+  shownTerms: string[];
+}
+
+export function getTermFlowState(): TermFlowState {
+  const raw = localStorage.getItem(TERM_FLOW_KEY);
+  if (raw) {
+    try { return JSON.parse(raw); } catch { /* */ }
+  }
+  return { completed: false, shownTerms: [] };
+}
+
+export function saveTermFlowState(state: TermFlowState) {
+  localStorage.setItem(TERM_FLOW_KEY, JSON.stringify(state));
+}
+
+export const ROUTE_TERM_SEQUENCES: Record<string, string[]> = {
+  '/': ['incident', 'priority', 'urgency', 'service'],
+  '/incidents': ['incident', 'priority', 'urgency', 'service'],
+  '/my-world': ['incident', 'on-call'],
+  '/services': ['service', 'team', 'on-call', 'escalation-policy', 'integration'],
+  '/users': ['contact-method', 'notification-rule', 'team'],
+  '/escalation-policies': ['escalation-policy', 'timeout'],
+  '/schedules': ['schedule', 'rotation', 'override'],
+  '/oncall': ['on-call', 'schedule', 'override'],
+  '/integrations': ['integration', 'routing-key', 'webhook'],
+  '/automation/workflows': ['workflow'],
+  '/automation/orchestration': ['event-orchestration', 'suppression', 'noise-reduction'],
+  '/analytics': ['mtta', 'mttr'],
+  '/status': ['status-dashboard'],
+  '/business-services': ['business-service', 'dependency', 'blast-radius', 'impact'],
+  '/service-graph': ['dependency', 'blast-radius'],
+  '/aiops': ['aiops', 'alert-grouping', 'noise-reduction'],
+  '/response-plays': ['response-play', 'mobilization'],
+  '/operations': ['incident', 'acknowledge', 'resolve'],
 };

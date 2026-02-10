@@ -5,6 +5,7 @@ import {
   Mail, Phone, MapPin, Clock, Shield, Users, Calendar,
   Bell, Edit2, ChevronRight, Plus, Trash2, Globe,
 } from 'lucide-react';
+import TermTooltip from '../components/TermTooltip';
 
 const TABS = ['My Profile', 'Contact Information', 'Notification Rules', 'User Settings', 'Permissions & Teams', 'On-Call Shifts', 'Subscriptions'];
 
@@ -49,7 +50,9 @@ function MyProfileTab({ user }: { user: User }) {
       </div>
 
       <div className="bg-white rounded-lg border p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Teams</h3>
+        <h3 className="font-semibold text-gray-900 mb-4">
+          <TermTooltip termId="team" inline>Teams</TermTooltip>
+        </h3>
         <div className="space-y-2">
           {user.teams.map(team => (
             <Link key={team} to="/teams" className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 border">
@@ -89,7 +92,9 @@ function ContactInfoTab({ user }: { user: User }) {
     <div className="space-y-6">
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Contact Methods</h3>
+          <h3 className="font-semibold text-gray-900">
+            <TermTooltip termId="contact-method" inline>Contact Methods</TermTooltip>
+          </h3>
           <button className="text-sm text-[#06ac38] hover:text-[#059c32] flex items-center gap-1"><Plus size={14} /> Add Contact Method</button>
         </div>
         <div className="space-y-3">
@@ -158,7 +163,9 @@ function NotificationRulesTab() {
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-gray-900">High-Urgency Notifications</h3>
+            <h3 className="font-semibold text-gray-900">
+              <TermTooltip termId="notification-rule" inline>High-Urgency Notifications</TermTooltip>
+            </h3>
             <p className="text-xs text-gray-500">How you want to be notified for high-urgency incidents</p>
           </div>
           <button className="text-sm text-[#06ac38] hover:text-[#059c32] flex items-center gap-1"><Plus size={14} /> Add Rule</button>

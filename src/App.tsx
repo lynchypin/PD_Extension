@@ -19,6 +19,7 @@ import RoleSelectionPage from './pages/RoleSelectionPage';
 import MyWorldPage from './pages/MyWorldPage';
 import GuidedTourOverlay from './components/GuidedTourOverlay';
 import KnowledgeBasePanel from './components/KnowledgeBasePanel';
+import { TermFlowProvider } from './components/TermFlowContext';
 import {
   getOnboarding, saveOnboarding, resetOnboarding,
   ADMIN_TOUR_STEPS, USER_TOUR_STEPS,
@@ -106,56 +107,58 @@ function App() {
 
   return (
     <HashRouter>
-      <Routes>
-        <Route element={<Layout onboardingRole={onboarding.role} onReset={handleReset} />}>
-          {onboarding.role === 'user' ? (
-            <Route path="/" element={<Navigate to="/my-world" replace />} />
-          ) : (
-            <Route path="/" element={<IncidentsPage />} />
-          )}
-          <Route path="/my-world" element={<MyWorldPage />} />
-          <Route path="/incidents" element={<IncidentsPage />} />
-          <Route path="/incidents/:incidentId" element={<IncidentsPage />} />
-          <Route path="/operations" element={<OperationsConsolePage />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/users/:userId" element={<UserProfilePage />} />
-          <Route path="/services" element={<ServiceDirectoryPage />} />
-          <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
-          <Route path="/services/:serviceId/integrations/add" element={<AddIntegrationPage />} />
-          <Route path="/service-graph" element={<ServiceGraphPage />} />
-          <Route path="/business-services" element={<BusinessServicesPage />} />
-          <Route path="/automation/workflows" element={<WorkflowsPage />} />
-          <Route path="/automation/workflows/new" element={<WorkflowBuilderPage />} />
-          <Route path="/automation/workflows/:workflowId" element={<WorkflowBuilderPage />} />
-          <Route path="/automation/orchestration" element={<OrchestrationListPage />} />
-          <Route path="/automation/orchestration/:orchestrationId" element={<OrchestrationDetailPage />} />
-          <Route path="/alerts" element={<PlaceholderPage />} />
-          <Route path="/teams" element={<PlaceholderPage />} />
-          <Route path="/automation/rundeck" element={<PlaceholderPage />} />
-          <Route path="/oncall" element={<PlaceholderPage />} />
-          <Route path="/escalation-policies" element={<PlaceholderPage />} />
-          <Route path="/schedules" element={<PlaceholderPage />} />
-          <Route path="/analytics" element={<PlaceholderPage />} />
-          <Route path="/integrations" element={<PlaceholderPage />} />
-          <Route path="/status" element={<PlaceholderPage />} />
-          <Route path="/aiops" element={<PlaceholderPage />} />
-          <Route path="/response-plays" element={<PlaceholderPage />} />
-          <Route path="/settings" element={<PlaceholderPage />} />
-        </Route>
-      </Routes>
+      <TermFlowProvider>
+        <Routes>
+          <Route element={<Layout onboardingRole={onboarding.role} onReset={handleReset} />}>
+            {onboarding.role === 'user' ? (
+              <Route path="/" element={<Navigate to="/my-world" replace />} />
+            ) : (
+              <Route path="/" element={<IncidentsPage />} />
+            )}
+            <Route path="/my-world" element={<MyWorldPage />} />
+            <Route path="/incidents" element={<IncidentsPage />} />
+            <Route path="/incidents/:incidentId" element={<IncidentsPage />} />
+            <Route path="/operations" element={<OperationsConsolePage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/users/:userId" element={<UserProfilePage />} />
+            <Route path="/services" element={<ServiceDirectoryPage />} />
+            <Route path="/services/:serviceId" element={<ServiceDetailPage />} />
+            <Route path="/services/:serviceId/integrations/add" element={<AddIntegrationPage />} />
+            <Route path="/service-graph" element={<ServiceGraphPage />} />
+            <Route path="/business-services" element={<BusinessServicesPage />} />
+            <Route path="/automation/workflows" element={<WorkflowsPage />} />
+            <Route path="/automation/workflows/new" element={<WorkflowBuilderPage />} />
+            <Route path="/automation/workflows/:workflowId" element={<WorkflowBuilderPage />} />
+            <Route path="/automation/orchestration" element={<OrchestrationListPage />} />
+            <Route path="/automation/orchestration/:orchestrationId" element={<OrchestrationDetailPage />} />
+            <Route path="/alerts" element={<PlaceholderPage />} />
+            <Route path="/teams" element={<PlaceholderPage />} />
+            <Route path="/automation/rundeck" element={<PlaceholderPage />} />
+            <Route path="/oncall" element={<PlaceholderPage />} />
+            <Route path="/escalation-policies" element={<PlaceholderPage />} />
+            <Route path="/schedules" element={<PlaceholderPage />} />
+            <Route path="/analytics" element={<PlaceholderPage />} />
+            <Route path="/integrations" element={<PlaceholderPage />} />
+            <Route path="/status" element={<PlaceholderPage />} />
+            <Route path="/aiops" element={<PlaceholderPage />} />
+            <Route path="/response-plays" element={<PlaceholderPage />} />
+            <Route path="/settings" element={<PlaceholderPage />} />
+          </Route>
+        </Routes>
 
-      {tourSteps && onboarding.guidedTour.active && (
-        <GuidedTourOverlay
-          steps={tourSteps}
-          currentStepIndex={onboarding.guidedTour.currentStepIndex}
-          onNext={handleTourNext}
-          onPrev={handleTourPrev}
-          onSkip={handleTourSkip}
-          onComplete={handleTourComplete}
-        />
-      )}
+        {tourSteps && onboarding.guidedTour.active && (
+          <GuidedTourOverlay
+            steps={tourSteps}
+            currentStepIndex={onboarding.guidedTour.currentStepIndex}
+            onNext={handleTourNext}
+            onPrev={handleTourPrev}
+            onSkip={handleTourSkip}
+            onComplete={handleTourComplete}
+          />
+        )}
 
-      <KnowledgeBasePanel />
+        <KnowledgeBasePanel />
+      </TermFlowProvider>
     </HashRouter>
   );
 }
