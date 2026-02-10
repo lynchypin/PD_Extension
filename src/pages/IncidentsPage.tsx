@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getStore, type Incident } from '../data/store';
+import TermTooltip from '../components/TermTooltip';
 import {
   AlertTriangle,
   CheckCircle,
@@ -113,7 +114,9 @@ export default function IncidentsPage() {
     <div className="flex h-full">
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-gray-900">Incidents</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            <TermTooltip termId="incident" inline>Incidents</TermTooltip>
+          </h1>
           <div className="flex items-center gap-2">
             <button className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
               <Filter size={14} /> Filter <ChevronDown size={12} />
@@ -166,12 +169,18 @@ export default function IncidentsPage() {
                   <input type="checkbox" checked={selectedIncidents.size === filteredIncidents.length && filteredIncidents.length > 0} onChange={toggleAll} className="rounded" />
                 </th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <TermTooltip termId="priority" inline>Priority</TermTooltip>
+                </th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <TermTooltip termId="service" inline>Service</TermTooltip>
+                </th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assignee</th>
-                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Urgency</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <TermTooltip termId="urgency" inline>Urgency</TermTooltip>
+                </th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
                 <th className="w-10 px-3 py-3"></th>
               </tr>

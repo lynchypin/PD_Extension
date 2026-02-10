@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getStore } from '../data/store';
 import { Search, Filter, Plus, MoreHorizontal, ChevronDown, ArrowUpRight, CheckCircle, AlertTriangle, XCircle, Wrench, Ban } from 'lucide-react';
+import TermTooltip from '../components/TermTooltip';
 
 function ServiceStatusIcon({ status }: { status: string }) {
   switch (status) {
@@ -38,10 +39,12 @@ export default function ServiceDirectoryPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Service Directory</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            <TermTooltip termId="service" inline>Service Directory</TermTooltip>
+          </h1>
           <p className="text-sm text-gray-500 mt-1">{store.services.length} services</p>
         </div>
-        <button className="bg-[#06ac38] hover:bg-[#059c32] text-white text-sm px-4 py-2 rounded-lg flex items-center gap-1">
+        <button className="bg-[#06ac38] hover:bg-[#059c32] text-white text-sm px-4 py-2 rounded-lg flex items-center gap-1" data-tour="create-service-btn">
           <Plus size={14} /> New Service
         </button>
       </div>
@@ -79,11 +82,19 @@ export default function ServiceDirectoryPage() {
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">On Call Now</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Escalation Policy</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <TermTooltip termId="team" inline>Team</TermTooltip>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <TermTooltip termId="on-call" inline>On Call Now</TermTooltip>
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <TermTooltip termId="escalation-policy" inline>Escalation Policy</TermTooltip>
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Incident</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Integrations</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                <TermTooltip termId="integration" inline>Integrations</TermTooltip>
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Standards</th>
               <th className="w-10 px-4 py-3"></th>
             </tr>

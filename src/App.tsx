@@ -16,12 +16,13 @@ import BusinessServicesPage from './pages/BusinessServicesPage';
 import ServiceGraphPage from './pages/ServiceGraphPage';
 import PlaceholderPage from './pages/PlaceholderPage';
 import RoleSelectionPage from './pages/RoleSelectionPage';
-import AdminSetupPage from './pages/AdminSetupPage';
-import UserSetupWizard from './pages/UserSetupWizard';
 import MyWorldPage from './pages/MyWorldPage';
+import GuidedTourOverlay from './components/GuidedTourOverlay';
+import KnowledgeBasePanel from './components/KnowledgeBasePanel';
 import {
   getOnboarding, saveOnboarding, resetOnboarding,
-  type OnboardingState, type OnboardingRole,
+  ADMIN_TOUR_STEPS, USER_TOUR_STEPS,
+  type OnboardingState, type OnboardingRole, type AdminPath, type UserPath,
 } from './data/onboardingStore';
 
 function App() {
@@ -32,13 +33,25 @@ function App() {
     saveOnboarding(state);
   }, []);
 
-  const selectRole = useCallback((role: OnboardingRole) => {
-    const next = { ...onboarding, role, started: true };
-    updateOnboarding(next);
-  }, [onboarding, updateOnboarding]);
+  const selectRole = useCallback((role: OnboardingRole, adminPath?: AdminPath, userPath?: UserPath) => {
+    const tourId = role === 'admin'
+      ? (adminPath || 'full-setup')
+      : (userPath || 'responder');
 
-  const finishOnboarding = useCallback(() => {
-    const next = { ...onboarding, dismissed: true };
+    const next: OnboardingState = {
+      ...onboarding,
+      role,
+      adminPath: adminPath || null,
+      userPath: userPath || null,
+      started: true,
+      dismissed: true,
+      guidedTour: {
+        active: true,
+        tourId,
+        currentStepIndex: 0,
+        completedTours: [...onboarding.guidedTour.completedTours],
+      },
+    };
     updateOnboarding(next);
   }, [onboarding, updateOnboarding]);
 
@@ -47,19 +60,49 @@ function App() {
     setOnboarding(fresh);
   }, []);
 
+  const tourSteps = (() => {
+    const tour = onboarding.guidedTour;
+    if (!tour.active || !tour.tourId) return null;
+    const adminSteps = ADMIN_TOUR_STEPS[tour.tourId];
+    if (adminSteps) return adminSteps;
+    const userSteps = USER_TOUR_STEPS[tour.tourId];
+    if (userSteps) return userSteps;
+    return null;
+  })();
+
+  const handleTourNext = useCallback(() => {
+    const next = { ...onboarding };
+    next.guidedTour = { ...next.guidedTour, currentStepIndex: next.guidedTour.currentStepIndex + 1 };
+    updateOnboarding(next);
+  }, [onboarding, updateOnboarding]);
+
+  const handleTourPrev = useCallback(() => {
+    const next = { ...onboarding };
+    next.guidedTour = { ...next.guidedTour, currentStepIndex: Math.max(0, next.guidedTour.currentStepIndex - 1) };
+    updateOnboarding(next);
+  }, [onboarding, updateOnboarding]);
+
+  const handleTourSkip = useCallback(() => {
+    const next = { ...onboarding };
+    next.guidedTour = { ...next.guidedTour, active: false };
+    updateOnboarding(next);
+  }, [onboarding, updateOnboarding]);
+
+  const handleTourComplete = useCallback(() => {
+    const next = { ...onboarding };
+    const tourId = next.guidedTour.tourId;
+    next.guidedTour = {
+      active: false,
+      tourId: null,
+      currentStepIndex: 0,
+      completedTours: tourId ? [...next.guidedTour.completedTours, tourId] : next.guidedTour.completedTours,
+    };
+    updateOnboarding(next);
+  }, [onboarding, updateOnboarding]);
+
   if (!onboarding.role) {
     return <RoleSelectionPage onSelect={selectRole} />;
   }
-
-  if (onboarding.role === 'admin' && !onboarding.dismissed) {
-    return <AdminSetupPage state={onboarding} onUpdate={updateOnboarding} onFinish={finishOnboarding} />;
-  }
-
-  if (onboarding.role === 'user' && !onboarding.dismissed) {
-    return <UserSetupWizard state={onboarding} onUpdate={updateOnboarding} onFinish={finishOnboarding} />;
-  }
-
-  const homePath = onboarding.role === 'user' ? '/my-world' : '/';
 
   return (
     <HashRouter>
@@ -100,6 +143,19 @@ function App() {
           <Route path="/settings" element={<PlaceholderPage />} />
         </Route>
       </Routes>
+
+      {tourSteps && onboarding.guidedTour.active && (
+        <GuidedTourOverlay
+          steps={tourSteps}
+          currentStepIndex={onboarding.guidedTour.currentStepIndex}
+          onNext={handleTourNext}
+          onPrev={handleTourPrev}
+          onSkip={handleTourSkip}
+          onComplete={handleTourComplete}
+        />
+      )}
+
+      <KnowledgeBasePanel />
     </HashRouter>
   );
 }
