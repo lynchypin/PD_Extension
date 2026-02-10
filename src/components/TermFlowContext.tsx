@@ -7,14 +7,20 @@ import {
 
 interface TermFlowContextValue {
   activeTermId: string | null;
+  openTermId: string | null;
   isFirstLogin: boolean;
   advanceTerm: (termId: string) => void;
+  requestOpen: (termId: string) => void;
+  requestClose: (termId: string) => void;
 }
 
 const TermFlowContext = createContext<TermFlowContextValue>({
   activeTermId: null,
+  openTermId: null,
   isFirstLogin: false,
   advanceTerm: () => {},
+  requestOpen: () => {},
+  requestClose: () => {},
 });
 
 export function useTermFlow() {
@@ -24,6 +30,7 @@ export function useTermFlow() {
 export function TermFlowProvider({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [flowState, setFlowState] = useState<TermFlowState>(getTermFlowState);
+  const [openTermId, setOpenTermId] = useState<string | null>(null);
 
   const persist = useCallback((next: TermFlowState) => {
     setFlowState(next);
@@ -50,6 +57,17 @@ export function TermFlowProvider({ children }: { children: React.ReactNode }) {
     return null;
   }, [flowState.completed, flowState.shownTerms, sequence]);
 
+  useEffect(() => {
+    if (activeTermId && !flowState.completed) {
+      const timer = setTimeout(() => setOpenTermId(activeTermId), 350);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTermId, flowState.completed]);
+
+  useEffect(() => {
+    setOpenTermId(null);
+  }, [location.pathname]);
+
   const advanceTerm = useCallback((termId: string) => {
     setFlowState(prev => {
       if (prev.shownTerms.includes(termId)) return prev;
@@ -60,6 +78,15 @@ export function TermFlowProvider({ children }: { children: React.ReactNode }) {
       saveTermFlowState(next);
       return next;
     });
+    setOpenTermId(null);
+  }, []);
+
+  const requestOpen = useCallback((termId: string) => {
+    setOpenTermId(termId);
+  }, []);
+
+  const requestClose = useCallback((termId: string) => {
+    setOpenTermId(prev => prev === termId ? null : prev);
   }, []);
 
   useEffect(() => {
@@ -74,9 +101,12 @@ export function TermFlowProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<TermFlowContextValue>(() => ({
     activeTermId,
+    openTermId,
     isFirstLogin: !flowState.completed,
     advanceTerm,
-  }), [activeTermId, flowState.completed, advanceTerm]);
+    requestOpen,
+    requestClose,
+  }), [activeTermId, openTermId, flowState.completed, advanceTerm, requestOpen, requestClose]);
 
   return (
     <TermFlowContext.Provider value={value}>

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { HelpCircle, X, EyeOff, ChevronRight } from 'lucide-react';
-import { TERMINOLOGY, getDismissedTerms, dismissTerm } from '../data/onboardingStore';
+import { HelpCircle, X, EyeOff, Check } from 'lucide-react';
+import { TERMINOLOGY, TERM_DEMO_FIELDS, getDismissedTerms, dismissTerm } from '../data/onboardingStore';
 import { useTermFlow } from './TermFlowContext';
 
 interface Props {
@@ -10,14 +10,16 @@ interface Props {
 }
 
 export default function TermTooltip({ termId, children, inline }: Props) {
-  const [open, setOpen] = useState(false);
   const [dismissed, setDismissed] = useState<'once' | 'forever' | null>(null);
+  const [fieldValue, setFieldValue] = useState('');
+  const [fieldChecked, setFieldChecked] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const popRef = useRef<HTMLDivElement>(null);
-  const hasAutoOpened = useRef(false);
 
   const entry = TERMINOLOGY[termId];
-  const { activeTermId, isFirstLogin, advanceTerm } = useTermFlow();
+  const demoField = TERM_DEMO_FIELDS[termId];
+  const { openTermId, activeTermId, isFirstLogin, advanceTerm, requestOpen, requestClose } = useTermFlow();
+
+  const isOpen = openTermId === termId;
   const isActiveFlowStep = isFirstLogin && activeTermId === termId;
 
   useEffect(() => {
@@ -25,32 +27,12 @@ export default function TermTooltip({ termId, children, inline }: Props) {
     if (d[termId]) setDismissed(d[termId]);
   }, [termId]);
 
-  useEffect(() => {
-    if (isActiveFlowStep && !hasAutoOpened.current && dismissed !== 'forever') {
-      hasAutoOpened.current = true;
-      const timer = setTimeout(() => setOpen(true), 350);
-      return () => clearTimeout(timer);
-    }
-  }, [isActiveFlowStep, dismissed]);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node) &&
-          popRef.current && !popRef.current.contains(e.target as Node)) {
-        handleClose();
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
   if (!entry || dismissed === 'forever') {
     return <>{children}</>;
   }
 
   const handleClose = () => {
-    setOpen(false);
+    requestClose(termId);
     if (isActiveFlowStep) {
       advanceTerm(termId);
     }
@@ -59,22 +41,45 @@ export default function TermTooltip({ termId, children, inline }: Props) {
   const handleDismiss = (mode: 'once' | 'forever') => {
     dismissTerm(termId, mode);
     setDismissed(mode);
-    setOpen(false);
+    requestClose(termId);
     if (isFirstLogin) {
       advanceTerm(termId);
     }
   };
+
+  const handleFieldSubmit = () => {
+    requestClose(termId);
+    if (isFirstLogin) {
+      advanceTerm(termId);
+    }
+    setFieldValue('');
+    setFieldChecked(false);
+  };
+
+  const handleIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isOpen) {
+      requestClose(termId);
+    } else {
+      requestOpen(termId);
+    }
+  };
+
+  const fieldFilled = demoField?.type === 'checkbox' ? fieldChecked : fieldValue.trim().length > 0;
 
   return (
     <span ref={ref} className={`relative ${inline ? 'inline' : 'inline-flex items-center'}`}>
       {children}
       {dismissed !== 'once' && (
         <button
-          onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpen(!open); }}
+          onClick={handleIconClick}
           className={`inline-flex items-center ml-1 transition-colors align-middle ${
             isActiveFlowStep
               ? 'text-[#06ac38] animate-pulse'
-              : 'text-gray-400 hover:text-[#06ac38]'
+              : isOpen
+                ? 'text-[#06ac38]'
+                : 'text-gray-400 hover:text-[#06ac38]'
           }`}
           title={`What is "${entry.term}"?`}
         >
@@ -82,10 +87,9 @@ export default function TermTooltip({ termId, children, inline }: Props) {
         </button>
       )}
 
-      {open && (
+      {isOpen && (
         <div
-          ref={popRef}
-          className={`absolute z-[8000] bg-white rounded-xl shadow-xl border w-72 left-0 mt-1 ${
+          className={`absolute z-[8000] bg-white rounded-xl shadow-xl border w-80 left-0 mt-1 ${
             isActiveFlowStep ? 'border-[#06ac38] ring-1 ring-[#06ac38]/20' : 'border-gray-200'
           }`}
           style={{ top: '100%' }}
@@ -112,13 +116,74 @@ export default function TermTooltip({ termId, children, inline }: Props) {
             <h4 className="text-sm font-semibold text-gray-900 mb-1.5">{entry.term}</h4>
             <p className="text-xs text-gray-600 leading-relaxed mb-3">{entry.definition}</p>
 
-            {isActiveFlowStep && (
-              <button
-                onClick={handleClose}
-                className="w-full flex items-center justify-center gap-1 text-xs bg-[#06ac38] hover:bg-[#059c32] text-white rounded-lg py-1.5 mb-2 font-medium"
-              >
-                Got it <ChevronRight size={12} />
-              </button>
+            {demoField && (
+              <div className="mb-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200">
+                <label className="block text-[11px] font-medium text-gray-500 mb-1.5 uppercase tracking-wide">
+                  Try it: {demoField.label}
+                </label>
+                {demoField.type === 'text' && (
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      value={fieldValue}
+                      onChange={(e) => setFieldValue(e.target.value)}
+                      placeholder={demoField.placeholder}
+                      className="flex-1 text-xs border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#06ac38] focus:border-[#06ac38]"
+                      onKeyDown={(e) => { if (e.key === 'Enter' && fieldFilled) handleFieldSubmit(); }}
+                    />
+                    <button
+                      onClick={handleFieldSubmit}
+                      disabled={!fieldFilled}
+                      className={`px-2 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 ${
+                        fieldFilled
+                          ? 'bg-[#06ac38] text-white hover:bg-[#059c32]'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Check size={12} />
+                    </button>
+                  </div>
+                )}
+                {demoField.type === 'select' && (
+                  <div className="flex gap-1.5">
+                    <select
+                      value={fieldValue}
+                      onChange={(e) => setFieldValue(e.target.value)}
+                      className="flex-1 text-xs border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#06ac38] focus:border-[#06ac38] bg-white"
+                    >
+                      <option value="">{demoField.placeholder}</option>
+                      {demoField.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                    <button
+                      onClick={handleFieldSubmit}
+                      disabled={!fieldFilled}
+                      className={`px-2 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 ${
+                        fieldFilled
+                          ? 'bg-[#06ac38] text-white hover:bg-[#059c32]'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Check size={12} />
+                    </button>
+                  </div>
+                )}
+                {demoField.type === 'checkbox' && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={fieldChecked}
+                      onChange={(e) => {
+                        setFieldChecked(e.target.checked);
+                        if (e.target.checked) {
+                          setTimeout(handleFieldSubmit, 400);
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-gray-300 text-[#06ac38] focus:ring-[#06ac38]"
+                    />
+                    <span className="text-xs text-gray-700">Enable</span>
+                  </label>
+                )}
+              </div>
             )}
 
             <div className="flex items-center gap-2 pt-2 border-t border-gray-100">

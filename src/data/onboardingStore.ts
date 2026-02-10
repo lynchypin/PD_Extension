@@ -637,3 +637,46 @@ export const ROUTE_TERM_SEQUENCES: Record<string, string[]> = {
   '/response-plays': ['response-play', 'mobilization'],
   '/operations': ['incident', 'acknowledge', 'resolve'],
 };
+
+export interface TermDemoField {
+  label: string;
+  placeholder: string;
+  type: 'text' | 'select' | 'checkbox';
+  options?: string[];
+}
+
+export const TERM_DEMO_FIELDS: Record<string, TermDemoField> = {
+  'incident': { label: 'Incident title', placeholder: 'e.g. Database CPU spike', type: 'text' },
+  'acknowledge': { label: 'Ack message', placeholder: 'e.g. Looking into it', type: 'text' },
+  'resolve': { label: 'Resolution note', placeholder: 'e.g. Restarted service', type: 'text' },
+  'service': { label: 'Service name', placeholder: 'e.g. payment-api', type: 'text' },
+  'integration': { label: 'Integration type', placeholder: 'Choose one…', type: 'select', options: ['Datadog', 'CloudWatch', 'Prometheus', 'Splunk'] },
+  'escalation-policy': { label: 'Policy name', placeholder: 'e.g. Engineering On-Call', type: 'text' },
+  'on-call': { label: 'On-call name', placeholder: 'e.g. weekend-rotation', type: 'text' },
+  'schedule': { label: 'Schedule name', placeholder: 'e.g. US-East Rotation', type: 'text' },
+  'override': { label: 'Override reason', placeholder: 'e.g. Covering for Alice', type: 'text' },
+  'urgency': { label: 'Default urgency', placeholder: 'Choose one…', type: 'select', options: ['High', 'Low', 'Dynamic'] },
+  'priority': { label: 'Priority label', placeholder: 'e.g. P1 - Critical', type: 'text' },
+  'team': { label: 'Team name', placeholder: 'e.g. Platform Engineering', type: 'text' },
+  'contact-method': { label: 'Contact email', placeholder: 'e.g. me@company.com', type: 'text' },
+  'notification-rule': { label: 'Notify after (min)', placeholder: 'e.g. 0', type: 'text' },
+  'mtta': { label: 'Target MTTA (min)', placeholder: 'e.g. 5', type: 'text' },
+  'mttr': { label: 'Target MTTR (min)', placeholder: 'e.g. 30', type: 'text' },
+  'event-orchestration': { label: 'Rule name', placeholder: 'e.g. Route DB alerts', type: 'text' },
+  'routing-key': { label: 'Key label', placeholder: 'e.g. prod-alerts', type: 'text' },
+  'webhook': { label: 'Webhook URL', placeholder: 'https://…', type: 'text' },
+  'workflow': { label: 'Workflow name', placeholder: 'e.g. Auto-page SRE', type: 'text' },
+  'alert-grouping': { label: 'Grouping window', placeholder: 'Choose one…', type: 'select', options: ['5 min', '15 min', '30 min', '1 hour'] },
+  'noise-reduction': { label: 'Enable noise reduction', placeholder: '', type: 'checkbox' },
+  'business-service': { label: 'Business service', placeholder: 'e.g. Checkout Flow', type: 'text' },
+  'response-play': { label: 'Play name', placeholder: 'e.g. Major Incident', type: 'text' },
+  'suppression': { label: 'Suppress pattern', placeholder: 'e.g. test-alert-*', type: 'text' },
+  'timeout': { label: 'Timeout (min)', placeholder: 'e.g. 30', type: 'text' },
+  'status-dashboard': { label: 'Dashboard name', placeholder: 'e.g. Public Status', type: 'text' },
+  'dependency': { label: 'Depends on', placeholder: 'e.g. auth-service', type: 'text' },
+  'blast-radius': { label: 'Affected services', placeholder: 'e.g. 3', type: 'text' },
+  'rotation': { label: 'Rotation type', placeholder: 'Choose one…', type: 'select', options: ['Daily', 'Weekly', 'Custom'] },
+  'mobilization': { label: 'Mobilize team', placeholder: 'e.g. Incident Commanders', type: 'text' },
+  'impact': { label: 'Impact level', placeholder: 'Choose one…', type: 'select', options: ['Critical', 'High', 'Medium', 'Low'] },
+  'aiops': { label: 'Enable AIOps', placeholder: '', type: 'checkbox' },
+};
