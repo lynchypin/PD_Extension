@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
+import NotificationDropdown from './NotificationDropdown';
 import {
   Bell,
   Search,
@@ -136,10 +137,7 @@ export default function Layout({ onboardingRole, onReset }: LayoutProps) {
           <button onClick={() => setSearchOpen(!searchOpen)} className="hover:bg-white/10 p-1.5 rounded">
             <Search size={18} />
           </button>
-          <button className="hover:bg-white/10 p-1.5 rounded relative">
-            <Bell size={18} />
-            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[10px] flex items-center justify-center">2</span>
-          </button>
+          <NotificationDropdown />
           <button className="bg-[#06ac38] hover:bg-[#059c32] text-white text-sm px-3 py-1.5 rounded flex items-center gap-1" data-tour="new-incident-btn">
             <Plus size={14} /> New Incident
           </button>

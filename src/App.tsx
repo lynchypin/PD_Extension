@@ -14,9 +14,20 @@ import OrchestrationDetailPage from './pages/OrchestrationDetailPage';
 import OperationsConsolePage from './pages/OperationsConsolePage';
 import BusinessServicesPage from './pages/BusinessServicesPage';
 import ServiceGraphPage from './pages/ServiceGraphPage';
-import PlaceholderPage from './pages/PlaceholderPage';
 import RoleSelectionPage from './pages/RoleSelectionPage';
 import MyWorldPage from './pages/MyWorldPage';
+import AlertsPage from './pages/AlertsPage';
+import TeamsPage from './pages/TeamsPage';
+import OnCallPage from './pages/OnCallPage';
+import EscalationPoliciesPage from './pages/EscalationPoliciesPage';
+import SchedulesPage from './pages/SchedulesPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import IntegrationsListPage from './pages/IntegrationsListPage';
+import StatusPage from './pages/StatusPage';
+import AIOpsPage from './pages/AIOpsPage';
+import ResponsePlaysPage from './pages/ResponsePlaysPage';
+import SettingsPage from './pages/SettingsPage';
+import RundeckPage from './pages/RundeckPage';
 import GuidedTourOverlay from './components/GuidedTourOverlay';
 import KnowledgeBasePanel from './components/KnowledgeBasePanel';
 import { TermFlowProvider } from './components/TermFlowContext';
@@ -131,18 +142,18 @@ function App() {
             <Route path="/automation/workflows/:workflowId" element={<WorkflowBuilderPage />} />
             <Route path="/automation/orchestration" element={<OrchestrationListPage />} />
             <Route path="/automation/orchestration/:orchestrationId" element={<OrchestrationDetailPage />} />
-            <Route path="/alerts" element={<PlaceholderPage />} />
-            <Route path="/teams" element={<PlaceholderPage />} />
-            <Route path="/automation/rundeck" element={<PlaceholderPage />} />
-            <Route path="/oncall" element={<PlaceholderPage />} />
-            <Route path="/escalation-policies" element={<PlaceholderPage />} />
-            <Route path="/schedules" element={<PlaceholderPage />} />
-            <Route path="/analytics" element={<PlaceholderPage />} />
-            <Route path="/integrations" element={<PlaceholderPage />} />
-            <Route path="/status" element={<PlaceholderPage />} />
-            <Route path="/aiops" element={<PlaceholderPage />} />
-            <Route path="/response-plays" element={<PlaceholderPage />} />
-            <Route path="/settings" element={<PlaceholderPage />} />
+            <Route path="/alerts" element={<AlertsPage />} />
+            <Route path="/teams" element={<TeamsPage />} />
+            <Route path="/automation/rundeck" element={<RundeckPage />} />
+            <Route path="/oncall" element={<OnCallPage />} />
+            <Route path="/escalation-policies" element={<EscalationPoliciesPage />} />
+            <Route path="/schedules" element={<SchedulesPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/integrations" element={<IntegrationsListPage />} />
+            <Route path="/status" element={<StatusPage />} />
+            <Route path="/aiops" element={<AIOpsPage />} />
+            <Route path="/response-plays" element={<ResponsePlaysPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>
 
