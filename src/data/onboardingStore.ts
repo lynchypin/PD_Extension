@@ -464,6 +464,39 @@ export const KNOWLEDGE_BASE: Record<string, KBArticle> = {
     ],
     relatedTerms: ['notification-rule', 'contact-method', 'timezone'],
   },
+  '/teams': {
+    id: 'teams-overview',
+    title: 'Teams',
+    summary: 'Organize your responders into teams that own services and share on-call responsibilities.',
+    sections: [
+      { heading: 'What is a Team?', content: 'A team is a group of users who share responsibility for one or more services. Teams have their own escalation policies, schedules, and dashboards.' },
+      { heading: 'Team Ownership', content: 'Each service is owned by a team. When an incident triggers on a service, the owning team\'s escalation policy determines who gets notified.' },
+      { heading: 'Managing Members', content: 'Add or remove members, assign roles within the team (manager, responder), and configure team-level notification rules.' },
+    ],
+    relatedTerms: ['team', 'service', 'escalation-policy'],
+  },
+  '/alerts': {
+    id: 'alerts-overview',
+    title: 'Alerts',
+    summary: 'Alerts are the raw signals from your monitoring tools that can trigger or group into incidents.',
+    sections: [
+      { heading: 'Alerts vs Incidents', content: 'An alert is a single signal from a monitoring integration. Multiple related alerts can be grouped into a single incident via alert grouping rules.' },
+      { heading: 'Alert Grouping', content: 'Intelligent alert grouping reduces noise by combining related alerts. Grouping can be time-based, content-based, or powered by AIOps machine learning.' },
+      { heading: 'Suppression', content: 'Suppress alerts that match certain patterns to prevent them from creating incidents, useful during maintenance windows or for known-noisy sources.' },
+    ],
+    relatedTerms: ['alert-grouping', 'noise-reduction', 'suppression', 'incident'],
+  },
+  '/automation/rundeck': {
+    id: 'rundeck-overview',
+    title: 'Rundeck Automation',
+    summary: 'Run automated diagnostics and remediation actions directly from PagerDuty.',
+    sections: [
+      { heading: 'What is Rundeck?', content: 'Rundeck is an operations automation platform integrated with PagerDuty. It allows responders to run pre-defined jobs like restarting services, gathering diagnostics, or executing runbooks.' },
+      { heading: 'Automated Diagnostics', content: 'Attach diagnostic jobs to services so responders can gather context with a single click when an incident triggers.' },
+      { heading: 'Self-Healing', content: 'Configure automated remediation that runs when specific incident conditions are met, reducing MTTR without human intervention.' },
+    ],
+    relatedTerms: ['workflow', 'incident', 'service'],
+  },
 };
 
 export const TERMINOLOGY: Record<string, TerminologyEntry> = {
