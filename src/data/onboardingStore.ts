@@ -57,6 +57,7 @@ export interface GuidedTourStep {
   placement: 'top' | 'bottom' | 'left' | 'right';
   route?: string;
   action?: string;
+  termId?: string;
 }
 
 export interface GuidedTourState {
@@ -199,51 +200,51 @@ export function resetDismissedTerms() {
 export const ADMIN_TOUR_STEPS: Record<string, GuidedTourStep[]> = {
   'full-setup': [
     { id: 'welcome', targetSelector: '[data-tour="pd-logo"]', title: 'Welcome to PagerDuty', body: 'This guided tour will walk you through setting up your organization step by step, right here in the real interface.', placement: 'bottom' },
-    { id: 'nav-services', targetSelector: '[data-tour="nav-services"]', title: 'Start with Services', body: 'Services represent the applications and infrastructure your team owns. Create your first service to begin routing alerts.', placement: 'right', route: '/services' },
-    { id: 'create-service', targetSelector: '[data-tour="create-service-btn"]', title: 'Create a Service', body: 'Click here to create your first service. You\'ll name it, assign a team, and connect an integration.', placement: 'bottom' },
-    { id: 'nav-integrations', targetSelector: '[data-tour="nav-integrations"]', title: 'Connect Your Tools', body: 'Integrations let monitoring tools like Datadog, CloudWatch, or Nagios send alerts into PagerDuty automatically.', placement: 'right', route: '/integrations' },
-    { id: 'nav-escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Escalation Policies', body: 'Define who gets notified and in what order when an incident is triggered. This ensures no alert goes unanswered.', placement: 'right', route: '/escalation-policies' },
-    { id: 'nav-schedules', targetSelector: '[data-tour="nav-schedules"]', title: 'On-Call Schedules', body: 'Create rotation schedules so your team shares the on-call responsibility fairly.', placement: 'right', route: '/schedules' },
-    { id: 'nav-incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incidents Dashboard', body: 'This is your command center. All triggered, acknowledged, and resolved incidents appear here.', placement: 'right', route: '/' },
-    { id: 'new-incident', targetSelector: '[data-tour="new-incident-btn"]', title: 'Test Your Setup', body: 'Try creating a manual incident to see the full lifecycle: trigger, acknowledge, and resolve.', placement: 'bottom' },
+    { id: 'nav-services', targetSelector: '[data-tour="nav-services"]', title: 'Start with Services', body: 'Services represent the applications and infrastructure your team owns. Create your first service to begin routing alerts.', placement: 'right', route: '/services', termId: 'service' },
+    { id: 'create-service', targetSelector: '[data-tour="create-service-btn"]', title: 'Create a Service', body: 'Click here to create your first service. You\'ll name it, assign a team, and connect an integration.', placement: 'bottom', termId: 'service' },
+    { id: 'nav-integrations', targetSelector: '[data-tour="nav-integrations"]', title: 'Connect Your Tools', body: 'Integrations let monitoring tools like Datadog, CloudWatch, or Nagios send alerts into PagerDuty automatically.', placement: 'right', route: '/integrations', termId: 'integration' },
+    { id: 'nav-escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Escalation Policies', body: 'Define who gets notified and in what order when an incident is triggered. This ensures no alert goes unanswered.', placement: 'right', route: '/escalation-policies', termId: 'escalation-policy' },
+    { id: 'nav-schedules', targetSelector: '[data-tour="nav-schedules"]', title: 'On-Call Schedules', body: 'Create rotation schedules so your team shares the on-call responsibility fairly.', placement: 'right', route: '/schedules', termId: 'schedule' },
+    { id: 'nav-incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incidents Dashboard', body: 'This is your command center. All triggered, acknowledged, and resolved incidents appear here.', placement: 'right', route: '/', termId: 'incident' },
+    { id: 'new-incident', targetSelector: '[data-tour="new-incident-btn"]', title: 'Test Your Setup', body: 'Try creating a manual incident to see the full lifecycle: trigger, acknowledge, and resolve.', placement: 'bottom', termId: 'acknowledge' },
   ],
   'quick-start': [
     { id: 'welcome', targetSelector: '[data-tour="pd-logo"]', title: 'Quick Start Tour', body: 'Let\'s get you up and running fast. We\'ll hit the essentials: one service, one escalation policy, and a test incident.', placement: 'bottom' },
-    { id: 'nav-services', targetSelector: '[data-tour="nav-services"]', title: 'Create a Service', body: 'Start by creating a service. This is the core building block - it represents what you\'re monitoring.', placement: 'right', route: '/services' },
-    { id: 'nav-escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Set Up Escalation', body: 'Quick - create a simple escalation policy. Even a single-person policy works to start.', placement: 'right', route: '/escalation-policies' },
-    { id: 'new-incident', targetSelector: '[data-tour="new-incident-btn"]', title: 'Fire a Test Incident', body: 'Create a test incident to see the whole flow. You\'re ready to go!', placement: 'bottom', route: '/' },
+    { id: 'nav-services', targetSelector: '[data-tour="nav-services"]', title: 'Create a Service', body: 'Start by creating a service. This is the core building block - it represents what you\'re monitoring.', placement: 'right', route: '/services', termId: 'service' },
+    { id: 'nav-escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Set Up Escalation', body: 'Quick - create a simple escalation policy. Even a single-person policy works to start.', placement: 'right', route: '/escalation-policies', termId: 'escalation-policy' },
+    { id: 'new-incident', targetSelector: '[data-tour="new-incident-btn"]', title: 'Fire a Test Incident', body: 'Create a test incident to see the whole flow. You\'re ready to go!', placement: 'bottom', route: '/', termId: 'incident' },
   ],
   'import-existing': [
     { id: 'welcome', targetSelector: '[data-tour="pd-logo"]', title: 'Import & Configure', body: 'Looks like you already have a setup in mind. Let\'s tour the key areas so you know where everything lives.', placement: 'bottom' },
-    { id: 'nav-integrations', targetSelector: '[data-tour="nav-integrations"]', title: 'Integrations Hub', body: 'Connect your existing monitoring stack here. PagerDuty supports 700+ integrations out of the box.', placement: 'right', route: '/integrations' },
-    { id: 'nav-services', targetSelector: '[data-tour="nav-services"]', title: 'Service Directory', body: 'Map your existing services here. You can organize them by team and configure each independently.', placement: 'right', route: '/services' },
-    { id: 'nav-people', targetSelector: '[data-tour="nav-people"]', title: 'People & Teams', body: 'Import your org structure. Invite team members and organize them into teams.', placement: 'right', route: '/users' },
-    { id: 'nav-automation', targetSelector: '[data-tour="nav-automation"]', title: 'Automation', body: 'Set up event orchestration to route and transform alerts from your existing tools.', placement: 'right', route: '/automation/orchestration' },
-    { id: 'nav-incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Ready to Go', body: 'Once your integrations are connected, incidents will flow in here automatically.', placement: 'right', route: '/' },
+    { id: 'nav-integrations', targetSelector: '[data-tour="nav-integrations"]', title: 'Integrations Hub', body: 'Connect your existing monitoring stack here. PagerDuty supports 700+ integrations out of the box.', placement: 'right', route: '/integrations', termId: 'integration' },
+    { id: 'nav-services', targetSelector: '[data-tour="nav-services"]', title: 'Service Directory', body: 'Map your existing services here. You can organize them by team and configure each independently.', placement: 'right', route: '/services', termId: 'service' },
+    { id: 'nav-people', targetSelector: '[data-tour="nav-people"]', title: 'People & Teams', body: 'Import your org structure. Invite team members and organize them into teams.', placement: 'right', route: '/users', termId: 'team' },
+    { id: 'nav-automation', targetSelector: '[data-tour="nav-automation"]', title: 'Automation', body: 'Set up event orchestration to route and transform alerts from your existing tools.', placement: 'right', route: '/automation/orchestration', termId: 'event-orchestration' },
+    { id: 'nav-incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Ready to Go', body: 'Once your integrations are connected, incidents will flow in here automatically.', placement: 'right', route: '/', termId: 'incident' },
   ],
 };
 
 export const USER_TOUR_STEPS: Record<string, GuidedTourStep[]> = {
   'responder': [
     { id: 'welcome', targetSelector: '[data-tour="pd-logo"]', title: 'Welcome, Responder', body: 'You\'re on the front lines. Let\'s make sure you\'re set up to receive and handle incidents effectively.', placement: 'bottom' },
-    { id: 'my-world', targetSelector: '[data-tour="nav-my-world"]', title: 'Your Dashboard', body: 'My World is your personal hub. See your incidents, on-call status, and services at a glance.', placement: 'right', route: '/my-world' },
-    { id: 'profile', targetSelector: '[data-tour="user-avatar"]', title: 'Contact Methods', body: 'Set up your phone, email, and SMS so PagerDuty can reach you when you\'re on call.', placement: 'left', route: '/users/user-1' },
-    { id: 'incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incident Queue', body: 'When an incident is assigned to you, acknowledge it quickly, then work to resolve it.', placement: 'right', route: '/incidents' },
-    { id: 'oncall', targetSelector: '[data-tour="nav-oncall"]', title: 'On-Call Schedule', body: 'Check when you\'re on call. You can also set up overrides if you need to swap shifts.', placement: 'right', route: '/oncall' },
+    { id: 'my-world', targetSelector: '[data-tour="nav-my-world"]', title: 'Your Dashboard', body: 'My World is your personal hub. See your incidents, on-call status, and services at a glance.', placement: 'right', route: '/my-world', termId: 'on-call' },
+    { id: 'profile', targetSelector: '[data-tour="user-avatar"]', title: 'Contact Methods', body: 'Set up your phone, email, and SMS so PagerDuty can reach you when you\'re on call.', placement: 'left', route: '/users/user-1', termId: 'contact-method' },
+    { id: 'incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incident Queue', body: 'When an incident is assigned to you, acknowledge it quickly, then work to resolve it.', placement: 'right', route: '/incidents', termId: 'incident' },
+    { id: 'oncall', targetSelector: '[data-tour="nav-oncall"]', title: 'On-Call Schedule', body: 'Check when you\'re on call. You can also set up overrides if you need to swap shifts.', placement: 'right', route: '/oncall', termId: 'schedule' },
   ],
   'stakeholder': [
     { id: 'welcome', targetSelector: '[data-tour="pd-logo"]', title: 'Welcome, Stakeholder', body: 'You\'re here to stay informed. Let\'s show you how to track incidents and service health without getting paged.', placement: 'bottom' },
-    { id: 'status', targetSelector: '[data-tour="nav-status"]', title: 'Status Dashboard', body: 'The Status page gives you a real-time view of all services and any ongoing incidents.', placement: 'right', route: '/status' },
-    { id: 'services', targetSelector: '[data-tour="nav-services"]', title: 'Service Health', body: 'See which services are healthy and which are impacted. Click any service for details.', placement: 'right', route: '/services' },
-    { id: 'analytics', targetSelector: '[data-tour="nav-analytics"]', title: 'Analytics & Reports', body: 'Track trends, MTTA, MTTR, and team performance over time.', placement: 'right', route: '/analytics' },
+    { id: 'status', targetSelector: '[data-tour="nav-status"]', title: 'Status Dashboard', body: 'The Status page gives you a real-time view of all services and any ongoing incidents.', placement: 'right', route: '/status', termId: 'status-dashboard' },
+    { id: 'services', targetSelector: '[data-tour="nav-services"]', title: 'Service Health', body: 'See which services are healthy and which are impacted. Click any service for details.', placement: 'right', route: '/services', termId: 'service' },
+    { id: 'analytics', targetSelector: '[data-tour="nav-analytics"]', title: 'Analytics & Reports', body: 'Track trends, MTTA, MTTR, and team performance over time.', placement: 'right', route: '/analytics', termId: 'mtta' },
   ],
   'manager': [
     { id: 'welcome', targetSelector: '[data-tour="pd-logo"]', title: 'Welcome, Team Manager', body: 'You\'re managing a team of responders. Let\'s tour the tools that help you oversee schedules, workload, and performance.', placement: 'bottom' },
-    { id: 'people', targetSelector: '[data-tour="nav-people"]', title: 'Your Team', body: 'Manage team members, roles, and contact methods from the People section.', placement: 'right', route: '/users' },
-    { id: 'schedules', targetSelector: '[data-tour="nav-schedules"]', title: 'Schedules', body: 'Review and adjust on-call schedules. Make sure coverage is fair and complete.', placement: 'right', route: '/schedules' },
-    { id: 'escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Escalation Policies', body: 'Ensure incidents always reach the right person. Review your team\'s escalation chains.', placement: 'right', route: '/escalation-policies' },
-    { id: 'analytics', targetSelector: '[data-tour="nav-analytics"]', title: 'Team Analytics', body: 'Monitor your team\'s incident load, response times, and burnout indicators.', placement: 'right', route: '/analytics' },
-    { id: 'incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incident Overview', body: 'Keep an eye on active incidents across your team\'s services.', placement: 'right', route: '/incidents' },
+    { id: 'people', targetSelector: '[data-tour="nav-people"]', title: 'Your Team', body: 'Manage team members, roles, and contact methods from the People section.', placement: 'right', route: '/users', termId: 'team' },
+    { id: 'schedules', targetSelector: '[data-tour="nav-schedules"]', title: 'Schedules', body: 'Review and adjust on-call schedules. Make sure coverage is fair and complete.', placement: 'right', route: '/schedules', termId: 'schedule' },
+    { id: 'escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Escalation Policies', body: 'Ensure incidents always reach the right person. Review your team\'s escalation chains.', placement: 'right', route: '/escalation-policies', termId: 'escalation-policy' },
+    { id: 'analytics', targetSelector: '[data-tour="nav-analytics"]', title: 'Team Analytics', body: 'Monitor your team\'s incident load, response times, and burnout indicators.', placement: 'right', route: '/analytics', termId: 'mtta' },
+    { id: 'incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incident Overview', body: 'Keep an eye on active incidents across your team\'s services.', placement: 'right', route: '/incidents', termId: 'incident' },
   ],
 };
 

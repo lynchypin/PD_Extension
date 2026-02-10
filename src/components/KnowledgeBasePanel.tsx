@@ -18,6 +18,12 @@ export default function KnowledgeBasePanel() {
     setShowTerms(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener('pd-open-kb', handler);
+    return () => window.removeEventListener('pd-open-kb', handler);
+  }, []);
+
   if (!article) return null;
 
   return (

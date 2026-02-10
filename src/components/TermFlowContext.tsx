@@ -27,7 +27,7 @@ export function useTermFlow() {
   return useContext(TermFlowContext);
 }
 
-export function TermFlowProvider({ children }: { children: React.ReactNode }) {
+export function TermFlowProvider({ children, tourActive }: { children: React.ReactNode; tourActive?: boolean }) {
   const location = useLocation();
   const [flowState, setFlowState] = useState<TermFlowState>(getTermFlowState);
   const [openTermId, setOpenTermId] = useState<string | null>(null);
@@ -58,11 +58,12 @@ export function TermFlowProvider({ children }: { children: React.ReactNode }) {
   }, [flowState.completed, flowState.shownTerms, sequence]);
 
   useEffect(() => {
+    if (tourActive) return;
     if (activeTermId && !flowState.completed) {
       const timer = setTimeout(() => setOpenTermId(activeTermId), 350);
       return () => clearTimeout(timer);
     }
-  }, [activeTermId, flowState.completed]);
+  }, [activeTermId, flowState.completed, tourActive]);
 
   useEffect(() => {
     setOpenTermId(null);

@@ -107,7 +107,7 @@ function App() {
 
   return (
     <HashRouter>
-      <TermFlowProvider>
+      <TermFlowProvider tourActive={!!(tourSteps && onboarding.guidedTour.active)}>
         <Routes>
           <Route element={<Layout onboardingRole={onboarding.role} onReset={handleReset} />}>
             {onboarding.role === 'user' ? (
