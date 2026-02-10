@@ -85,15 +85,20 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
       setVisible(false);
       setTransitioning(true);
       navigate(step.route);
-      const timer = setTimeout(() => {
-        positionTooltip();
-        setTransitioning(false);
-      }, 400);
-      return () => clearTimeout(timer);
+      return;
     }
-    const timer = setTimeout(positionTooltip, 150);
+    if (transitioning) {
+      setTransitioning(false);
+    }
+    const timer = setTimeout(positionTooltip, 200);
     return () => clearTimeout(timer);
-  }, [step, location.pathname, navigate, positionTooltip]);
+  }, [step, location.pathname, navigate, positionTooltip, transitioning]);
+
+  useEffect(() => {
+    if (!transitioning) return;
+    const fallback = setTimeout(() => setTransitioning(false), 2000);
+    return () => clearTimeout(fallback);
+  }, [transitioning]);
 
   useEffect(() => {
     const handler = () => positionTooltip();
@@ -105,7 +110,9 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
     };
   }, [positionTooltip]);
 
-  if (!step || transitioning) {
+  if (!step) return null;
+
+  if (transitioning) {
     return (
       <div className="fixed inset-0 bg-black/40 z-[9998] flex items-center justify-center transition-opacity">
         <div className="text-white text-sm animate-pulse">Navigating...</div>
@@ -117,7 +124,7 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
 
   return (
     <>
-      <svg className="fixed inset-0 z-[9998] pointer-events-none" width="100%" height="100%">
+      <svg className="fixed inset-0 z-[9998]" width="100%" height="100%" style={{ pointerEvents: 'none' }}>
         <defs>
           <mask id="tour-mask">
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
@@ -133,7 +140,7 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
             )}
           </mask>
         </defs>
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.5)" mask="url(#tour-mask)" />
+        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.35)" mask="url(#tour-mask)" style={{ pointerEvents: 'none' }} />
       </svg>
 
       {sr && (
@@ -147,8 +154,6 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
           }}
         />
       )}
-
-      <div className="fixed inset-0 z-[9998]" onClick={onSkip} />
 
       {visible && (
         <div
