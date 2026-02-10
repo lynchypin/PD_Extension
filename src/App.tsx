@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import IncidentsPage from './pages/IncidentsPage';
@@ -36,9 +36,22 @@ import {
   ADMIN_TOUR_STEPS, USER_TOUR_STEPS,
   type OnboardingState, type OnboardingRole, type AdminPath, type UserPath,
 } from './data/onboardingStore';
+import { clearDemoEntries, resetStore } from './data/store';
 
 function App() {
   const [onboarding, setOnboarding] = useState<OnboardingState>(getOnboarding);
+  const [, setStoreVersion] = useState(0);
+
+  useEffect(() => {
+    const onStoreUpdate = () => setStoreVersion(v => v + 1);
+    window.addEventListener('pd-store-updated', onStoreUpdate);
+    const onUnload = () => clearDemoEntries();
+    window.addEventListener('beforeunload', onUnload);
+    return () => {
+      window.removeEventListener('pd-store-updated', onStoreUpdate);
+      window.removeEventListener('beforeunload', onUnload);
+    };
+  }, []);
 
   const updateOnboarding = useCallback((state: OnboardingState) => {
     setOnboarding(state);
@@ -68,6 +81,7 @@ function App() {
   }, [onboarding, updateOnboarding]);
 
   const handleReset = useCallback(() => {
+    resetStore();
     const fresh = resetOnboarding();
     setOnboarding(fresh);
   }, []);

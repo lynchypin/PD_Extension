@@ -281,5 +281,185 @@ export function saveStore(data: ReturnType<typeof generateSeedData>) {
 
 export function resetStore() {
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(DEMO_ENTRIES_KEY);
   return getStore();
+}
+
+const DEMO_ENTRIES_KEY = 'pd-demo-entries';
+
+function trackDemoId(id: string) {
+  const raw = localStorage.getItem(DEMO_ENTRIES_KEY);
+  const ids: string[] = raw ? JSON.parse(raw) : [];
+  ids.push(id);
+  localStorage.setItem(DEMO_ENTRIES_KEY, JSON.stringify(ids));
+}
+
+export function addDemoEntry(termId: string, value: string): boolean {
+  const store = getStore();
+  const now = new Date().toISOString();
+  const uid = `demo-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+  switch (termId) {
+    case 'service': {
+      const svc: Service = {
+        id: uid, name: value, description: `Created during onboarding demo`,
+        status: 'active', team: store.teams[0]?.name || 'Default', teamId: store.teams[0]?.id || 'team-1',
+        escalationPolicy: store.escalationPolicies[0]?.name || 'Default',
+        escalationPolicyId: store.escalationPolicies[0]?.id || 'ep-1',
+        lastIncident: 'Never', integrationCount: 0, createdAt: now,
+      };
+      store.services.unshift(svc);
+      trackDemoId(uid);
+      break;
+    }
+    case 'incident': {
+      const svc = store.services[0];
+      const assignee = store.users[0];
+      const maxNum = Math.max(...store.incidents.map(i => i.number), 1847);
+      const inc: Incident = {
+        id: uid, number: maxNum + 1, title: value, status: 'triggered', urgency: 'high',
+        service: svc?.name || 'Unknown', serviceId: svc?.id || 'svc-1',
+        assignee: assignee?.name || 'You', assigneeId: assignee?.id || 'user-1',
+        escalationPolicy: svc?.escalationPolicy || 'Default',
+        createdAt: now, updatedAt: now, priority: 'P2',
+      };
+      store.incidents.unshift(inc);
+      trackDemoId(uid);
+      break;
+    }
+    case 'acknowledge': {
+      const triggered = store.incidents.find(i => i.status === 'triggered');
+      if (triggered) {
+        triggered.status = 'acknowledged';
+        triggered.updatedAt = now;
+      }
+      break;
+    }
+    case 'resolve': {
+      const ackd = store.incidents.find(i => i.status === 'acknowledged') ||
+                   store.incidents.find(i => i.status === 'triggered');
+      if (ackd) {
+        ackd.status = 'resolved';
+        ackd.updatedAt = now;
+      }
+      break;
+    }
+    case 'team': {
+      const team: Team = {
+        id: uid, name: value, description: 'Created during onboarding demo',
+        memberCount: 1, members: [store.users[0]?.id || 'user-1'],
+      };
+      store.teams.unshift(team);
+      trackDemoId(uid);
+      break;
+    }
+    case 'escalation-policy': {
+      const ep: EscalationPolicy = {
+        id: uid, name: value, description: 'Created during onboarding demo',
+        teamId: store.teams[0]?.id || 'team-1',
+        rules: [{ level: 1, targets: [store.users[0]?.id || 'user-1'], escalationDelayMinutes: 30 }],
+        repeatEnabled: false, numLoops: 0,
+      };
+      store.escalationPolicies.unshift(ep);
+      trackDemoId(uid);
+      break;
+    }
+    case 'schedule':
+    case 'on-call': {
+      const sched: Schedule = {
+        id: uid, name: value, timezone: 'America/Los_Angeles',
+        teamId: store.teams[0]?.id || 'team-1',
+        users: [store.users[0]?.id || 'user-1', store.users[1]?.id || 'user-2'],
+      };
+      store.schedules.unshift(sched);
+      trackDemoId(uid);
+      break;
+    }
+    case 'integration': {
+      const integ: Integration = {
+        id: uid, name: `${value} Integration`, type: 'Events API v2',
+        serviceId: store.services[0]?.id || 'svc-1', vendor: value, createdAt: now,
+      };
+      store.integrations.unshift(integ);
+      const svc = store.services.find(s => s.id === integ.serviceId);
+      if (svc) svc.integrationCount++;
+      trackDemoId(uid);
+      break;
+    }
+    case 'workflow': {
+      const wf: Workflow = {
+        id: uid, name: value, description: 'Created during onboarding demo',
+        status: 'active', triggerType: 'incident',
+        actions: [{ id: `${uid}-a1`, type: 'Send Notification', package: 'PagerDuty', config: { message: 'Auto-generated' }, order: 1 }],
+        teamId: store.teams[0]?.id || 'team-1',
+        createdBy: store.users[0]?.id || 'user-1',
+        createdAt: now, updatedAt: now, runCount: 0,
+      };
+      store.workflows.unshift(wf);
+      trackDemoId(uid);
+      break;
+    }
+    case 'event-orchestration': {
+      const orch: Orchestration = {
+        id: uid, name: value, description: 'Created during onboarding demo',
+        type: 'global', rules: [{ id: `${uid}-r1`, label: value, conditions: [{ field: 'event.source', operator: 'contains', value: '*' }], actions: [{ type: 'route_to', value: store.services[0]?.id || 'svc-1' }], order: 1, disabled: false }],
+        createdAt: now, updatedAt: now,
+      };
+      store.orchestrations.unshift(orch);
+      trackDemoId(uid);
+      break;
+    }
+    case 'business-service': {
+      const bs: BusinessService = {
+        id: uid, name: value, description: 'Created during onboarding demo',
+        owner: store.teams[0]?.name || 'Default', ownerTeamId: store.teams[0]?.id || 'team-1',
+        pointOfContact: store.users[0]?.name || 'You', pointOfContactId: store.users[0]?.id || 'user-1',
+        status: 'operational', supportingServices: [store.services[0]?.id || 'svc-1'],
+        createdAt: now, updatedAt: now,
+      };
+      store.businessServices.unshift(bs);
+      trackDemoId(uid);
+      break;
+    }
+    case 'urgency': {
+      const svc = store.services[0];
+      if (svc) {
+        svc.description = `${svc.description} [Default urgency: ${value}]`;
+      }
+      break;
+    }
+    case 'priority': {
+      const inc = store.incidents[0];
+      if (inc) inc.priority = value;
+      break;
+    }
+    default:
+      return false;
+  }
+
+  saveStore(store);
+  window.dispatchEvent(new CustomEvent('pd-store-updated'));
+  return true;
+}
+
+export function clearDemoEntries() {
+  const raw = localStorage.getItem(DEMO_ENTRIES_KEY);
+  if (!raw) return;
+  const ids: string[] = JSON.parse(raw);
+  if (!ids.length) return;
+  const idSet = new Set(ids);
+  const store = getStore();
+
+  store.incidents = store.incidents.filter(e => !idSet.has(e.id));
+  store.services = store.services.filter(e => !idSet.has(e.id));
+  store.teams = store.teams.filter(e => !idSet.has(e.id));
+  store.escalationPolicies = store.escalationPolicies.filter(e => !idSet.has(e.id));
+  store.schedules = store.schedules.filter(e => !idSet.has(e.id));
+  store.integrations = store.integrations.filter(e => !idSet.has(e.id));
+  store.workflows = store.workflows.filter(e => !idSet.has(e.id));
+  store.orchestrations = store.orchestrations.filter(e => !idSet.has(e.id));
+  store.businessServices = store.businessServices.filter(e => !idSet.has(e.id));
+
+  saveStore(store);
+  localStorage.removeItem(DEMO_ENTRIES_KEY);
 }

@@ -3,6 +3,7 @@ import { X, ArrowRight, ArrowLeft, CheckCircle2, MapPin, BookOpen, Check } from 
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { GuidedTourStep } from '../data/onboardingStore';
 import { TERMINOLOGY, TERM_DEMO_FIELDS } from '../data/onboardingStore';
+import { addDemoEntry } from '../data/store';
 
 interface Props {
   steps: GuidedTourStep[];
@@ -125,6 +126,10 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
   }, [positionTooltip]);
 
   const handleFieldSubmit = () => {
+    if (step?.termId) {
+      const val = demoField?.type === 'checkbox' ? 'true' : fieldValue.trim();
+      if (val) addDemoEntry(step.termId, val);
+    }
     setFieldValue('');
     setFieldChecked(false);
     if (isLast) {

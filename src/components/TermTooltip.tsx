@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { HelpCircle, X, EyeOff, Check } from 'lucide-react';
 import { TERMINOLOGY, TERM_DEMO_FIELDS, getDismissedTerms, dismissTerm } from '../data/onboardingStore';
+import { addDemoEntry } from '../data/store';
 import { useTermFlow } from './TermFlowContext';
 
 interface Props {
@@ -48,6 +49,10 @@ export default function TermTooltip({ termId, children, inline }: Props) {
   };
 
   const handleFieldSubmit = () => {
+    if (demoField) {
+      const val = demoField.type === 'checkbox' ? 'true' : fieldValue.trim();
+      if (val) addDemoEntry(termId, val);
+    }
     requestClose(termId);
     if (isFirstLogin) {
       advanceTerm(termId);
