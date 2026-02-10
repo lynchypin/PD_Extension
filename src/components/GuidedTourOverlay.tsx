@@ -26,6 +26,7 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
   const [visible, setVisible] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const lastNavigatedRef = useRef<string | null>(null);
 
   const step = steps[currentStepIndex];
   const isLast = currentStepIndex === steps.length - 1;
@@ -82,17 +83,18 @@ export default function GuidedTourOverlay({ steps, currentStepIndex, onNext, onP
   useEffect(() => {
     if (!step) return;
     if (step.route && location.pathname !== step.route) {
+      if (lastNavigatedRef.current === step.route) return;
       setVisible(false);
       setTransitioning(true);
+      lastNavigatedRef.current = step.route;
       navigate(step.route);
       return;
     }
-    if (transitioning) {
-      setTransitioning(false);
-    }
+    lastNavigatedRef.current = null;
+    setTransitioning(false);
     const timer = setTimeout(positionTooltip, 200);
     return () => clearTimeout(timer);
-  }, [step, location.pathname, navigate, positionTooltip, transitioning]);
+  }, [step, location.pathname, navigate, positionTooltip]);
 
   useEffect(() => {
     if (!transitioning) return;

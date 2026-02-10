@@ -243,7 +243,7 @@ export const USER_TOUR_STEPS: Record<string, GuidedTourStep[]> = {
     { id: 'schedules', targetSelector: '[data-tour="nav-schedules"]', title: 'Schedules', body: 'Review and adjust on-call schedules. Make sure coverage is fair and complete.', placement: 'right', route: '/schedules' },
     { id: 'escalation', targetSelector: '[data-tour="nav-escalation"]', title: 'Escalation Policies', body: 'Ensure incidents always reach the right person. Review your team\'s escalation chains.', placement: 'right', route: '/escalation-policies' },
     { id: 'analytics', targetSelector: '[data-tour="nav-analytics"]', title: 'Team Analytics', body: 'Monitor your team\'s incident load, response times, and burnout indicators.', placement: 'right', route: '/analytics' },
-    { id: 'incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incident Overview', body: 'Keep an eye on active incidents across your team\'s services.', placement: 'right', route: '/' },
+    { id: 'incidents', targetSelector: '[data-tour="nav-incidents"]', title: 'Incident Overview', body: 'Keep an eye on active incidents across your team\'s services.', placement: 'right', route: '/incidents' },
   ],
 };
 
