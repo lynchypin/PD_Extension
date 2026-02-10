@@ -72,9 +72,12 @@ export default function TermTooltip({ termId, children, inline }: Props) {
     <span ref={ref} className={`relative ${inline ? 'inline' : 'inline-flex items-center'}`}>
       {children}
       {dismissed !== 'once' && (
-        <button
+        <span
+          role="button"
+          tabIndex={0}
           onClick={handleIconClick}
-          className={`inline-flex items-center ml-1 transition-colors align-middle ${
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleIconClick(e as unknown as React.MouseEvent); }}
+          className={`inline-flex items-center ml-1 transition-colors align-middle cursor-pointer ${
             isActiveFlowStep
               ? 'text-[#06ac38] animate-pulse'
               : isOpen
@@ -84,7 +87,7 @@ export default function TermTooltip({ termId, children, inline }: Props) {
           title={`What is "${entry.term}"?`}
         >
           <HelpCircle size={13} />
-        </button>
+        </span>
       )}
 
       {isOpen && (
