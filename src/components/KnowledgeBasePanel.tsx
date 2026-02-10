@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { BookOpen, X, ExternalLink, HelpCircle, ChevronRight } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { KNOWLEDGE_BASE, TERMINOLOGY, type KBArticle } from '../data/onboardingStore';
@@ -41,7 +42,7 @@ export default function KnowledgeBasePanel() {
 
   const allArticles = Object.values(ALL_ARTICLES) as (KBArticle & { _path?: string })[];
 
-  return (
+  return createPortal(
     <>
       {!open && (
         <button
@@ -191,6 +192,7 @@ export default function KnowledgeBasePanel() {
           </div>
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 }

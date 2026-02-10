@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   getTermFlowState, saveTermFlowState, ROUTE_TERM_SEQUENCES,
@@ -31,6 +31,7 @@ export function TermFlowProvider({ children, tourActive }: { children: React.Rea
   const location = useLocation();
   const [flowState, setFlowState] = useState<TermFlowState>(getTermFlowState);
   const [openTermId, setOpenTermId] = useState<string | null>(null);
+  const tourWasActive = useRef(!!tourActive);
 
   const persist = useCallback((next: TermFlowState) => {
     setFlowState(next);
@@ -58,7 +59,14 @@ export function TermFlowProvider({ children, tourActive }: { children: React.Rea
   }, [flowState.completed, flowState.shownTerms, sequence]);
 
   useEffect(() => {
-    if (tourActive) return;
+    if (tourActive) {
+      tourWasActive.current = true;
+      return;
+    }
+    if (tourWasActive.current) {
+      tourWasActive.current = false;
+      return;
+    }
     if (activeTermId && !flowState.completed) {
       const timer = setTimeout(() => setOpenTermId(activeTermId), 350);
       return () => clearTimeout(timer);

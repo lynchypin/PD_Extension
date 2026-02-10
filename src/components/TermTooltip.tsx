@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { HelpCircle, X, EyeOff, Check } from 'lucide-react';
 import { TERMINOLOGY, TERM_DEMO_FIELDS, getDismissedTerms, dismissTerm } from '../data/onboardingStore';
 import { addDemoEntry } from '../data/store';
@@ -15,6 +16,9 @@ export default function TermTooltip({ termId, children, inline }: Props) {
   const [fieldValue, setFieldValue] = useState('');
   const [fieldChecked, setFieldChecked] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLSpanElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
 
   const entry = TERMINOLOGY[termId];
   const demoField = TERM_DEMO_FIELDS[termId];
@@ -27,6 +31,31 @@ export default function TermTooltip({ termId, children, inline }: Props) {
     const d = getDismissedTerms();
     if (d[termId]) setDismissed(d[termId]);
   }, [termId]);
+
+  useLayoutEffect(() => {
+    if (!isOpen || !iconRef.current) {
+      setPopupPos(null);
+      return;
+    }
+    const rect = iconRef.current.getBoundingClientRect();
+    let top = rect.bottom + 4;
+    let left = rect.left;
+
+    requestAnimationFrame(() => {
+      if (popupRef.current) {
+        const popupRect = popupRef.current.getBoundingClientRect();
+        if (left + popupRect.width > window.innerWidth - 8) {
+          left = window.innerWidth - popupRect.width - 8;
+        }
+        if (top + popupRect.height > window.innerHeight - 8) {
+          top = rect.top - popupRect.height - 4;
+        }
+        setPopupPos({ top, left });
+      }
+    });
+
+    setPopupPos({ top, left });
+  }, [isOpen]);
 
   if (!entry || dismissed === 'forever') {
     return <>{children}</>;
@@ -78,6 +107,7 @@ export default function TermTooltip({ termId, children, inline }: Props) {
       {children}
       {dismissed !== 'once' && (
         <span
+          ref={iconRef}
           role="button"
           tabIndex={0}
           onClick={handleIconClick}
@@ -95,12 +125,13 @@ export default function TermTooltip({ termId, children, inline }: Props) {
         </span>
       )}
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
-          className={`absolute z-[8000] bg-white rounded-xl shadow-xl border w-80 left-0 mt-1 ${
+          ref={popupRef}
+          className={`fixed z-[8000] bg-white rounded-xl shadow-xl border w-80 ${
             isActiveFlowStep ? 'border-[#06ac38] ring-1 ring-[#06ac38]/20' : 'border-gray-200'
           }`}
-          style={{ top: '100%' }}
+          style={{ top: popupPos?.top ?? -9999, left: popupPos?.left ?? -9999 }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-4">
@@ -209,7 +240,8 @@ export default function TermTooltip({ termId, children, inline }: Props) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </span>
   );
