@@ -1,0 +1,18 @@
+DISCLAIMER
+
+This project ("PD_Extension") is an independent, unofficial recreation of
+PagerDuty's web application user interface, built for personal
+demonstration/practice purposes. It is NOT an official PagerDuty product and is
+NOT affiliated with, endorsed by, sponsored by, or supported by PagerDuty, Inc.
+
+"PagerDuty" and the PagerDuty logo are trademarks and/or copyrighted works of
+PagerDuty, Inc. Page names, feature names and UI structure in this project are
+used solely to recreate the visual and functional shape of the product for
+demonstration purposes. No claim of ownership over any PagerDuty trademark,
+design, or asset is made or implied.
+
+This project runs entirely against its own local demo data. It does not connect
+to PagerDuty's live API, hold any live PagerDuty credentials, or contain any real
+customer, account, or business data.
+
+This software is provided "as is", without warranty of any kind.
