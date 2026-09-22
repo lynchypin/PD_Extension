@@ -1,3 +1,16 @@
+# PD_Extension
+
+# NOT CREATED BY PAGERDUTY
+
+Independent, unofficial recreation of the PagerDuty web application's page
+structure, built for personal demonstration purposes. Not affiliated with,
+endorsed by, sponsored by, or supported by PagerDuty, Inc. "PagerDuty" and the
+PagerDuty logo are trademarks of PagerDuty, Inc. Runs entirely on local demo
+data — no connection to PagerDuty's live API, and no real customer, account, or
+business data. See [DISCLAIMER](DISCLAIMER).
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
